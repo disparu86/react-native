@@ -12,6 +12,7 @@ package com.facebook.react.views.webview;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Picture;
@@ -131,9 +132,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     
     private final FrameLayout.LayoutParams FULLSCREEN_LAYOUT_PARAMS = new FrameLayout.LayoutParams(
                                                                                                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.CENTER);
-    
-    
-    
     
     
     protected static class ReactWebViewClient extends WebViewClient {
@@ -477,6 +475,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
                 
                 webView.setVisibility(View.GONE);
                 
+                reactContext.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                
+                
             }
             
             @Override
@@ -493,6 +494,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
                 mCustomViewCallback.onCustomViewHidden();
                 
                 webView.setVisibility(View.VISIBLE);
+                
+                reactContext.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                
             }
             
             private ViewGroup getRootView() {
