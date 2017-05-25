@@ -9,6 +9,7 @@
 
 package com.facebook.react.views.webview;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -20,11 +21,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowInsets;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
@@ -44,6 +47,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
@@ -472,8 +476,21 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
                 view.setBackgroundColor(Color.BLACK);
                 
                 getRootView().addView(view, FULLSCREEN_LAYOUT_PARAMS);
-                
                 webView.setVisibility(View.GONE);
+                
+                UiThreadUtil.runOnUiThread(
+                                           new Runnable() {
+                    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void run() {
+                        // If the status bar is translucent hook into the window insets calculations
+                        // and consume all the top insets so no padding will be added under the status bar.
+                        View decorView = reactContext.getCurrentActivity().getWindow().getDecorView();
+                        decorView.setOnApplyWindowInsetsListener(null);
+                        ViewCompat.requestApplyInsets(decorView);
+                    }
+                });
+                
                 
                 reactContext.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 
@@ -492,8 +509,35 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
                 getRootView().removeView(mVideoView);
                 mVideoView = null;
                 mCustomViewCallback.onCustomViewHidden();
-                
                 webView.setVisibility(View.VISIBLE);
+                //                View decorView = reactContext.getCurrentActivity().getWindow().getDecorView();
+                //                // Show Status Bar.
+                //                int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
+                //                decorView.setSystemUiVisibility(uiOptions);
+                
+                UiThreadUtil.runOnUiThread(
+                                           new Runnable() {
+                    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void run() {
+                        // If the status bar is translucent hook into the window insets calculations
+                        // and consume all the top insets so no padding will be added under the status bar.
+                        View decorView = reactContext.getCurrentActivity().getWindow().getDecorView();
+                        decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                            @Override
+                            public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+                                WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
+                                return defaultInsets.replaceSystemWindowInsets(
+                                                                               defaultInsets.getSystemWindowInsetLeft(),
+                                                                               0,
+                                                                               defaultInsets.getSystemWindowInsetRight(),
+                                                                               defaultInsets.getSystemWindowInsetBottom());
+                            }
+                        });
+                        ViewCompat.requestApplyInsets(decorView);
+                    }
+                });
+                
                 
                 reactContext.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 
