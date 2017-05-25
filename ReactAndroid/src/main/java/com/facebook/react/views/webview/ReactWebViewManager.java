@@ -9,30 +9,31 @@
 
 package com.facebook.react.views.webview;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Picture;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ActivityEventListener;
@@ -124,6 +125,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     WebView.PictureListener mPictureListener;
     private ValueCallback<Uri[]> mFilePathCallback;
     private String mCameraPhotoPath;
+    private WebChromeClient.CustomViewCallback mCustomViewCallback;
+    private View mVideoView;
+    //    private View mWebView;
+    
+    private final FrameLayout.LayoutParams FULLSCREEN_LAYOUT_PARAMS = new FrameLayout.LayoutParams(
+                                                                                                   LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.CENTER);
+    
+    
+    
     
     
     protected static class ReactWebViewClient extends WebViewClient {
@@ -353,7 +363,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     
     @Override
     protected WebView createViewInstance(final ThemedReactContext reactContext) {
-        ReactWebView webView = new ReactWebView(reactContext);
+        final ReactWebView webView = new ReactWebView(reactContext);
         
         /**
          * 設置跨域cookie讀取
@@ -447,6 +457,54 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
                 
                 
                 return true;
+            }
+            
+            @Override
+            public void onShowCustomView(View view, CustomViewCallback callback) {
+                
+                try {
+                    if (mVideoView != null) {
+                        callback.onCustomViewHidden();
+                        return;
+                    }
+                    
+                    // Store the view and it's callback for later, so we can dispose of them correctly
+                    mVideoView = view;
+                    mCustomViewCallback = callback;
+                    
+                    view.setBackgroundColor(Color.BLACK);
+                    
+                    getRootView().addView(view, FULLSCREEN_LAYOUT_PARAMS);
+                    
+                    webView.setVisibility(View.GONE);
+                    
+                }catch (Exception e) {
+                    
+                    System.out.println("測試------"+e.toString());
+                    
+                }
+                
+                
+            }
+            
+            @Override
+            public void onHideCustomView() {
+                if (mVideoView == null) {
+                    return;
+                }
+                
+                mVideoView.setVisibility(View.GONE);
+                
+                // Remove the custom view from its container.
+                getRootView().removeView(mVideoView);
+                mVideoView = null;
+                mCustomViewCallback.onCustomViewHidden();
+                
+                webView.setVisibility(View.VISIBLE);
+            }
+            
+            private ViewGroup getRootView() {
+                return ((ViewGroup) reactContext.getCurrentActivity().findViewById(android.R.id.content));
             }
         });
         
