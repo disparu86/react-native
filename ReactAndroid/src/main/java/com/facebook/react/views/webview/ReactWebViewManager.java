@@ -462,28 +462,20 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
                 
-                try {
-                    if (mVideoView != null) {
-                        callback.onCustomViewHidden();
-                        return;
-                    }
-                    
-                    // Store the view and it's callback for later, so we can dispose of them correctly
-                    mVideoView = view;
-                    mCustomViewCallback = callback;
-                    
-                    view.setBackgroundColor(Color.BLACK);
-                    
-                    getRootView().addView(view, FULLSCREEN_LAYOUT_PARAMS);
-                    
-                    webView.setVisibility(View.GONE);
-                    
-                }catch (Exception e) {
-                    
-                    System.out.println("測試------"+e.toString());
-                    
+                if (mVideoView != null) {
+                    callback.onCustomViewHidden();
+                    return;
                 }
                 
+                // Store the view and it's callback for later, so we can dispose of them correctly
+                mVideoView = view;
+                mCustomViewCallback = callback;
+                
+                view.setBackgroundColor(Color.BLACK);
+                
+                getRootView().addView(view, FULLSCREEN_LAYOUT_PARAMS);
+                
+                webView.setVisibility(View.GONE);
                 
             }
             
