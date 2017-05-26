@@ -30,6 +30,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.WindowInsets;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
+import android.webkit.DownloadListener;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
@@ -376,6 +377,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
         }
         
+        webView.setDownloadListener(new DownloadListener() {
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
+                Uri uri = Uri.parse(url);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                reactContext.getCurrentActivity().startActivity(intent);
+                
+            }
+        });
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onConsoleMessage(ConsoleMessage message) {
@@ -474,7 +484,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
                 mCustomViewCallback = callback;
                 
                 view.setBackgroundColor(Color.BLACK);
-                
                 getRootView().addView(view, FULLSCREEN_LAYOUT_PARAMS);
                 webView.setVisibility(View.GONE);
                 
@@ -504,8 +513,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
                 }
                 
                 mVideoView.setVisibility(View.GONE);
-                
-                // Remove the custom view from its container.
                 getRootView().removeView(mVideoView);
                 mVideoView = null;
                 mCustomViewCallback.onCustomViewHidden();
@@ -546,6 +553,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             private ViewGroup getRootView() {
                 return ((ViewGroup) reactContext.getCurrentActivity().findViewById(android.R.id.content));
             }
+            
+            
         });
         
         reactContext.addLifecycleEventListener(webView);
