@@ -34,7 +34,7 @@ const viewConfig = {
     isHighlighted: true,
     numberOfLines: true,
     ellipsizeMode: true,
-    allowFontScaling: true,
+    allowFontScaling: false,
     selectable: true,
     selectionColor: true,
     adjustsFontSizeToFit: true,
