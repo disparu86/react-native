@@ -377,12 +377,32 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
         }
         
+        
         webView.setDownloadListener(new DownloadListener() {
             @Override
             public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
                 Uri uri = Uri.parse(url);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 reactContext.getCurrentActivity().startActivity(intent);
+                
+                //                DownloadManager.Request request = new DownloadManager.Request(
+                //                        Uri.parse(url));
+                //
+                //                request.setMimeType(mimetype);
+                //                String cookies = CookieManager.getInstance().getCookie(url);
+                //                request.addRequestHeader("cookie", cookies);
+                //                request.addRequestHeader("User-Agent", userAgent);
+                //                request.allowScanningByMediaScanner();
+                ////                request.setTitle()
+                //                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED); //Notify client once download is completed!
+                //                request.setDestinationInExternalPublicDir(
+                //                        Environment.DIRECTORY_DOWNLOADS, URLUtil.guessFileName(
+                //                                url, contentDisposition, mimetype));
+                //                DownloadManager dm = (DownloadManager) reactContext.getCurrentActivity().getSystemService(DOWNLOAD_SERVICE);
+                //                dm.enqueue(request);
+                //                Toast.makeText(reactContext, "下載中...", //To notify the Client that the file is being downloaded
+                //                        Toast.LENGTH_LONG).show();
+                
                 
             }
         });
@@ -598,7 +618,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setDisplayZoomControls(false);
         webView.getSettings().setDomStorageEnabled(true);
-        
+        webView.getSettings().setDefaultFontSize(16);
+        webView.getSettings().setTextZoom(100);
         // Fixes broken full-screen modals/galleries due to body height being 0.
         webView.setLayoutParams(
                                 new LayoutParams(LayoutParams.MATCH_PARENT,
