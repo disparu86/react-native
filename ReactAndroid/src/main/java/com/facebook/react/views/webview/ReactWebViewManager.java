@@ -27,7 +27,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.WindowInsets;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
@@ -550,17 +549,18 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
                         // If the status bar is translucent hook into the window insets calculations
                         // and consume all the top insets so no padding will be added under the status bar.
                         View decorView = reactContext.getCurrentActivity().getWindow().getDecorView();
-                        decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                            @Override
-                            public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
-                                WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
-                                return defaultInsets.replaceSystemWindowInsets(
-                                                                               defaultInsets.getSystemWindowInsetLeft(),
-                                                                               0,
-                                                                               defaultInsets.getSystemWindowInsetRight(),
-                                                                               defaultInsets.getSystemWindowInsetBottom());
-                            }
-                        });
+                        //                                decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                        //                                    @Override
+                        //                                    public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+                        //                                        WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
+                        //                                        return defaultInsets.replaceSystemWindowInsets(
+                        //                                                defaultInsets.getSystemWindowInsetLeft(),
+                        //                                                0,
+                        //                                                defaultInsets.getSystemWindowInsetRight(),
+                        //                                                defaultInsets.getSystemWindowInsetBottom());
+                        //                                    }
+                        //                                });
+                        decorView.setOnApplyWindowInsetsListener(null);
                         ViewCompat.requestApplyInsets(decorView);
                     }
                 });
