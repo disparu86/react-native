@@ -131,6 +131,29 @@ class WebView extends React.Component {
      */
     injectedJavaScript: PropTypes.string,
 
+
+     /**
+     * Specifies the mixed content mode. i.e WebView will allow a secure origin to load content from any other origin.
+     *
+     * Possible values for `mixedContentMode` are:
+     *
+     * - `'never'` (default) - WebView will not allow a secure origin to load content from an insecure origin.
+     * - `'always'` - WebView will allow a secure origin to load content from any other origin, even if that origin is insecure.
+     * - `'compatibility'` -  WebView will attempt to be compatible with the approach of a modern web browser with regard to mixed content.
+     * @platform android
+     */
+    mixedContentMode: PropTypes.oneOf([
+      'never',
+      'always',
+      'compatibility'
+    ]),
+
+    /**
+     * Used on Android only, controls whether form autocomplete data should be saved
+     * @platform android
+     */
+    saveFormDataDisabled: PropTypes.bool,
+
     /**
      * Sets whether the webpage scales to fit the view and the user can change the scale.
      */
@@ -171,6 +194,9 @@ class WebView extends React.Component {
     viewState: WebViewState.IDLE,
     lastErrorEvent: null,
     startInLoadingState: true,
+    saveFormDataDisabled: false
+
+
   };
 
   componentWillMount() {
@@ -234,6 +260,8 @@ class WebView extends React.Component {
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
+        mixedContentMode={this.props.mixedContentMode}
+        saveFormDataDisabled={this.props.saveFormDataDisabled}
         mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
       />;
@@ -300,6 +328,10 @@ class WebView extends React.Component {
     );
   };
 
+
+
+
+
   /**
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
@@ -352,6 +384,7 @@ class WebView extends React.Component {
 var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
   nativeOnly: {
     messagingEnabled: PropTypes.bool,
+    testID:true,
   },
 });
 
