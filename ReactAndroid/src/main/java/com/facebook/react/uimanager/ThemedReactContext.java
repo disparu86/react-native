@@ -68,4 +68,4 @@ public class ThemedReactContext extends ReactContext {
   public @Nullable Activity getCurrentActivity() {
     return mReactApplicationContext.getCurrentActivity();
   }
-}123123
+}
