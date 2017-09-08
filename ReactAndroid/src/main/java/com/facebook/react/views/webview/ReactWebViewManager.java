@@ -169,7 +169,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (url.startsWith("http://") || url.startsWith("https://") ||
+            
+            //url有包含learningdigital.com,不進行攔截,其他超連結開啟外部瀏覽器
+            if (url.toLowerCase().contains("learningdigital.com") ||
                 url.startsWith("file://")) {
                 return false;
             } else {
