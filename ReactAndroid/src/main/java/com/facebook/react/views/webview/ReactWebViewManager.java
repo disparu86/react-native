@@ -170,8 +170,25 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             
-            //url有包含learningdigital.com,不進行攔截,其他超連結開啟外部瀏覽器
-            if (url.toLowerCase().contains("learningdigital.com") ||
+//            //url有包含learningdigital.com,不進行攔截,其他超連結開啟外部瀏覽器
+//            if (url.toLowerCase().contains("learningdigital.com") ||
+//                url.startsWith("file://")) {
+//                return false;
+//            } else {
+//                
+//                if(!url.startsWith("market://")) {
+//                    try {
+//                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        view.getContext().startActivity(intent);
+//                    } catch (ActivityNotFoundException e) {
+//                        FLog.w(ReactConstants.TAG, "activity not found to handle uri scheme for: " + url, e);
+//                    }
+//                }
+//                return true;
+//            }
+            
+            if (url.startsWith("http://") || url.startsWith("https://") ||
                 url.startsWith("file://")) {
                 return false;
             } else {
